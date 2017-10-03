@@ -252,6 +252,7 @@ void rt_init_stack (P_TCB p_TCB, FUNCP task_body) {
   U32 *stk,i,size;
 
   /* Prepare a complete interrupt frame for first task start */
+  /* in this case here, we can see that the size of the stack is determined by bits 15-2*/
   size = p_TCB->priv_stack >> 2;
   if (size == 0) {
     size = (U16)os_stackinfo >> 2;

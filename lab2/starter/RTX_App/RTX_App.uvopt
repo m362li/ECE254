@@ -13,7 +13,6 @@
     <tExt>*.txt; *.h; *.inc</tExt>
     <pExt>*.plm</pExt>
     <CppX>*.cpp</CppX>
-    <nMigrate>0</nMigrate>
   </Extensions>
 
   <DaveTm>
@@ -32,7 +31,6 @@
         <BeepAtEnd>1</BeepAtEnd>
         <RunSim>1</RunSim>
         <RunTarget>0</RunTarget>
-        <RunAbUc>0</RunAbUc>
       </OPTTT>
       <OPTHX>
         <HexSelection>1</HexSelection>
@@ -78,6 +76,16 @@
         <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
+      <DllOpt>
+        <SimDllName>SARMCM3.DLL</SimDllName>
+        <SimDllArguments>-MPU</SimDllArguments>
+        <SimDlgDllName>DARMP1.DLL</SimDlgDllName>
+        <SimDlgDllArguments>-pLPC1768</SimDlgDllArguments>
+        <TargetDllName>SARMCM3.DLL</TargetDllName>
+        <TargetDllArguments>-MPU</TargetDllArguments>
+        <TargetDlgDllName>TARMP1.DLL</TargetDlgDllName>
+        <TargetDlgDllArguments>-pLPC1768</TargetDlgDllArguments>
+      </DllOpt>
       <DebugOpt>
         <uSim>1</uSim>
         <uTrg>0</uTrg>
@@ -96,8 +104,6 @@
         <tRfunc>0</tRfunc>
         <tRbox>1</tRbox>
         <tRtrace>1</tRtrace>
-        <sRSysVw>1</sRSysVw>
-        <tRSysVw>1</tRSysVw>
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <nTsel>1</nTsel>
@@ -126,9 +132,6 @@
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
-      <Tracepoint>
-        <THDelay>0</THDelay>
-      </Tracepoint>
       <DebugFlag>
         <trace>0</trace>
         <periodic>0</periodic>
@@ -146,7 +149,7 @@
         <AscS3>0</AscS3>
         <aSer3>0</aSer3>
         <eProf>0</eProf>
-        <aLa>0</aLa>
+        <aLa>1</aLa>
         <aPa1>0</aPa1>
         <AscS4>0</AscS4>
         <aSer4>0</aSer4>
@@ -155,15 +158,17 @@
         <newCpu>0</newCpu>
         <uProt>0</uProt>
       </DebugFlag>
+      <Tracepoint>
+        <THDelay>0</THDelay>
+      </Tracepoint>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
-      <bLintAuto>0</bLintAuto>
     </TargetOption>
   </Target>
 
   <Group>
     <GroupName>Startup Code</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -173,7 +178,10 @@
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>114</TopLine>
+      <CurrentLine>124</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\startup_LPC17xx.s</PathWithFileName>
       <FilenameWithoutPath>startup_LPC17xx.s</FilenameWithoutPath>
@@ -184,7 +192,7 @@
 
   <Group>
     <GroupName>System Code</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -194,7 +202,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>7276416</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>5</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\RTX_Conf_CM.c</PathWithFileName>
       <FilenameWithoutPath>RTX_Conf_CM.c</FilenameWithoutPath>
@@ -207,7 +218,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>7276416</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>5</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\Retarget.c</PathWithFileName>
       <FilenameWithoutPath>Retarget.c</FilenameWithoutPath>
@@ -220,7 +234,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>7276416</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>5</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\system_LPC17xx.c</PathWithFileName>
       <FilenameWithoutPath>system_LPC17xx.c</FilenameWithoutPath>
@@ -233,7 +250,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>7276416</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>5</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\uart_polling.c</PathWithFileName>
       <FilenameWithoutPath>uart_polling.c</FilenameWithoutPath>
@@ -244,7 +264,7 @@
 
   <Group>
     <GroupName>Source Code</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -254,7 +274,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>91</TopLine>
+      <CurrentLine>92</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\main_task_exp.c</PathWithFileName>
       <FilenameWithoutPath>main_task_exp.c</FilenameWithoutPath>
@@ -265,7 +288,7 @@
 
   <Group>
     <GroupName>RTX Lib</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -275,7 +298,10 @@
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>7276416</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>5</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\RTX_CM3\CM3_LE\RTX_CM3.lib</PathWithFileName>
       <FilenameWithoutPath>RTX_CM3.lib</FilenameWithoutPath>
@@ -296,7 +322,10 @@
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>7276416</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>5</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Test_spec.txt</PathWithFileName>
       <FilenameWithoutPath>Test_spec.txt</FilenameWithoutPath>
