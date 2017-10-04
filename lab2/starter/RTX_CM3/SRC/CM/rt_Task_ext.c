@@ -52,33 +52,54 @@ int rt_tsk_count_get (void) {
 /*--------------------------- rt_tsk_get ------------------------------------*/
 /* added in ECE254 lab keil_proc */
 OS_RESULT rt_tsk_get (OS_TID task_id, RL_TASK_INFO *p_task_info) {
-  p_tcb = &os_idle_TCB;
-  p_tcb = os_active_TCB[task_id-1];
-	/* Add your own code here. Change the following lines accordingly */
+    P_TCB p_tcb;
+	U32 stack_usage, stack_size;
+
+	// TID does not exist (except for idle TCB)
+	if (task_id > os_maxtaskrun && task_id != os_idle_TCB.task_id) {
+		return OS_R_NOK;
+	}
 	
-  p_task_info->task_id     = p_tcb->task_id;
-	p_task_info->state       = p_tcb->state;
-	p_task_info->prio        = p_tcb->prio;
-  
-  /* code snippet below copied from https://learn.uwaterloo.ca/d2l/le/content/336412/viewContent/1882575/View */
-  /* start of code snippet */
-  if (p_tcb->state != 2) {
-    U32 sizeInAddr = (U16)os_stackinfo;
-    p_task_info->stack_usage = (U8)(((U32)(p_tcb->stack) + sizeInAddr - (U32)(p_tcb->tsk_stack))*100/sizeInAddr);
-  }
-  else {
-    U32 sizeInAddr = (U16)os_stackinfo;
-    p_task_info->stack_usage = (U8)(((U32)(p_tcb->stack) + sizeInAddr - (U32)(rt_get_PSP()))*100/sizeInAddr);  
-  }
-  
-  /* end of code snippet*/
+	// Values
+    if (task_id != os_idle_TCB.task_id)
+        p_tcb = os_active_TCB[task_id - 1];
+    else
+        p_tcb = &os_idle_TCB;
+	stack_usage = 0;
+	stack_size = (U16)os_stackinfo;
+    
+    // Stack usage
+	// running / not running
+	if (p_tcb->state == RUNNING) {
+		// rt_get_PSP: MRS R0,PSP. 
+		// MRS: Move the contents of a PSR to a general-purpose register.
+		// PSP: Program Status Pointer
+		stack_usage = stack_size - ((U32)rt_get_PSP() - (U32)p_tcb->stack);
+		// unused = PSP - stack(task stack block pointer)
+		// used = stack_size - unused
+	} else {
+		stack_usage = stack_size - ((U32)p_tcb->tsk_stack - (U32)p_tcb->stack);
+		// unused = tsk_stack(current stack pointer) - stack(task stack block pointer)
+		// used = stack_size - unused
+	}
+	stack_usage = (stack_usage * 100) / stack_size; // used percentage
+    
+    p_task_info->task_id = (U8)task_id;
+	p_task_info->state = (U8)p_tcb->state;
+    p_task_info->prio = (U8)p_tcb->prio;
+    p_task_info->stack_usage = (U8)stack_usage;
+    p_task_info->ptask = p_tcb->ptask;
 	
-  p_task_info->ptask       = p_tcb->ptask;
-  
-  if (p_tcb->state <= 10)
-    return OS_R_OK;
-  else
-    return OS_R_NOK;
+    
+  if (p_task_info->state != INACTIVE
+		&& p_task_info->state != READY
+		&& p_task_info->state != RUNNING
+		&& p_task_info->state != WAIT_DLY
+		&& p_task_info->state != WAIT_SEM
+		&& p_task_info->state != WAIT_MUT) {
+		return OS_R_NOK;
+	}
+	return OS_R_OK;
 }
 
 /*----------------------------------------------------------------------------
