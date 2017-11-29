@@ -33,6 +33,11 @@ char *fp2name(void (*p)(), char *str);
 OS_MUT g_mut_uart;
 OS_TID g_tid = 255;
 
+void *testptr;
+int task_resume_flag = 0;
+
+_declare_box(testpool, 12, 30);
+
 int  g_counter = 0;  // a global counter
 char g_str[16];
 char g_tsk_name[16];
@@ -43,9 +48,9 @@ struct func_info g_task_map[NUM_FNAMES] = \
   {NULL,  "os_idle_demon"}, \
   {task1, "task1"},   \
   {task2, "task2"},   \
-	{task3, "task3"},   \
-	{task4, "task4"},   \
-	{task5, "task5"},   \
+  {task3, "task3"},   \
+  {task4, "task4"},   \
+  {task5, "task5"},   \
   {init,  "init" }
 };
 
@@ -61,72 +66,64 @@ __task void task1(void)
 	}
 }
 
-/*--------------------------- task2 -----------------------------------*/
-/* checking states of all tasks in the system                          */
-/*---------------------------------------------------------------------*/
 __task void task2(void)
 {
-	U8 i=1;
-	RL_TASK_INFO task_info;
-  
-	while(1) {
-		
-		os_mut_wait(g_mut_uart, 0xFFFF);
-		printf("TID\tNAME\t\tPRIO\tSTATE   \t%%STACK\n");
-		os_mut_release(g_mut_uart);
-
-		for(i = 0; i < 10; i++) { // this is a lazy way of doing loop.
-			if (os_tsk_get(i+1, &task_info) == OS_R_OK) {
-				os_mut_wait(g_mut_uart, 0xFFFF);  
-				printf("%d\t%s\t\t%d\t%s\t%d%%\n", \
-							 task_info.task_id, \
-							 fp2name(task_info.ptask, g_tsk_name), \
-							 task_info.prio, \
-							 state2str(task_info.state, g_str),  \
-							 task_info.stack_usage);
-				os_mut_release(g_mut_uart);
-			} 
-		}
-			
-		// Task ID = 255
-		if (os_tsk_get(0xFF, &task_info) == OS_R_OK) {
-			os_mut_wait(g_mut_uart, 0xFFFF);  
-			printf("%d\t%s\t\t%d\t%s\t%d%%\n", \
-						 task_info.task_id, \
-						 fp2name(task_info.ptask, g_tsk_name), \
-						 task_info.prio, \
-						 state2str(task_info.state, g_str),  \
-						 task_info.stack_usage);
-			os_mut_release(g_mut_uart);
-		} 
-		
-		printf("------------------------------------\n");
-		
-		os_dly_wait(2);
-		
+	while (1) {
+        printf ("running task2...\n");
+        task_resume_flag = 0;
+        testptr = os_mem_alloc(testpool);
+        os_mut_wait(g_mut_uart, 0xFFFF);
+        if (!task_resume_flag) 
+            printf("task2 allocated block %d of 30 in pool \n", ((U32)testptr - (U32)testpool) / 12);
+        else 
+            printf ("resuming task2...\n");
+        os_mut_release(g_mut_uart);
 	}
-	//os_tsk_delete_self(); 
-
 }
 
 __task void task3(void) {
-	for (;;) {
-		os_dly_wait(8);
-		g_counter++;
-	}
+	while (1) {
+        printf ("running task3...\n");
+        task_resume_flag = 0;
+        testptr = os_mem_alloc(testpool);
+        os_mut_wait(g_mut_uart, 0xFFFF);
+        if (!task_resume_flag) 
+            printf("task3 allocated block %d of 30 in pool \n", ((U32)testptr - (U32)testpool) / 12);
+        else 
+            printf ("resuming task3...\n");
+        os_mut_release(g_mut_uart);
+    }
 }
 
 __task void task4(void) {
-	for (;;) {
-		os_dly_wait(5);
-		g_counter++;
-	}
+	while (1) {
+        printf ("running task4...\n");
+        task_resume_flag = 0;
+        testptr = os_mem_alloc(testpool);
+        os_mut_wait(g_mut_uart, 0xFFFF);
+        if (!task_resume_flag) 
+            printf("task4 allocated block %d of 30 in pool \n", ((U32)testptr - (U32)testpool) / 12);
+        else 
+            printf ("resuming task4...\n");
+        os_mut_release(g_mut_uart);
+    }
 }
 
 __task void task5(void) {
-	for (;;) {
-		os_dly_wait(1);
-		g_counter++;
+    int val;
+	while (1) {
+        val = os_mem_free(testpool, testptr);
+        if (val == OS_R_OK) {
+            os_mut_wait(g_mut_uart, 0xFFFF);
+            printf ("task5 successfully freed memory \n");
+            os_mut_release(g_mut_uart);
+            task_resume_flag = 1;
+        }
+        else {
+            os_mut_wait(g_mut_uart, 0xFFFF);
+            printf ("task5 failed to free memory \n");
+            os_mut_release(g_mut_uart);
+        }
 	}
 }
 
@@ -136,34 +133,46 @@ __task void task5(void) {
 __task void init(void)
 {
 	os_mut_init(&g_mut_uart);
-  
+ 
+	_init_box(testpool, sizeof(testpool), 12);
+    
+    //makes memory pool full
+    testptr = os_mem_alloc(testpool);
+    printf("Filling memory pool \n");
+    
+	while (((U32)testptr - (U32)testpool) / 12 < 29) {
+        testptr = os_mem_alloc(testpool);
+	}
+    
+    printf("Remaining blocks in pool %d \n", 30 - (((U32)testptr - (U32)testpool) / 12));
+    
 	os_mut_wait(g_mut_uart, 0xFFFF);
 	printf("init: TID = %d\n", os_tsk_self());
 	os_mut_release(g_mut_uart);
 	
-	g_tid = os_tsk_create(task3, 1);  /* task 3 at priority 1 */
-	os_mut_wait(g_mut_uart, 0xFFFF);
-	printf("init: created task3 with TID %d\n", g_tid);
-	os_mut_release(g_mut_uart);
-	
-	g_tid = os_tsk_create(task4, 2);  /* task 4 at priority 2 */
-	os_mut_wait(g_mut_uart, 0xFFFF);
-	printf("init: created task4 with TID %d\n", g_tid);
-	os_mut_release(g_mut_uart);
-	
-	g_tid = os_tsk_create(task5, 3);  /* task 5 at priority 3 */
-	os_mut_wait(g_mut_uart, 0xFFFF);
-	printf("init: created task5 with TID %d\n", g_tid);
-	os_mut_release(g_mut_uart);
-  
 	g_tid = os_tsk_create(task1, 1);  /* task 1 at priority 1 */
 	os_mut_wait(g_mut_uart, 0xFFFF);
 	printf("init: created task1 with TID %d\n", g_tid);
 	os_mut_release(g_mut_uart);
   
-	g_tid = os_tsk_create(task2, 1);  /* task 2 at priority 1 */
+	g_tid = os_tsk_create(task2, 3);  /* task 2 at priority 1 */
 	os_mut_wait(g_mut_uart, 0xFFFF);
 	printf("init: created task2 with TID %d\n", g_tid);
+	os_mut_release(g_mut_uart);
+	
+	g_tid = os_tsk_create(task3, 4);  /* task 3 at priority 5 */
+	os_mut_wait(g_mut_uart, 0xFFFF);
+	printf("init: created task3 with TID %d\n", g_tid);
+	os_mut_release(g_mut_uart);
+	
+	g_tid = os_tsk_create(task4, 4);  /* task 4 at priority 2 */
+	os_mut_wait(g_mut_uart, 0xFFFF);
+	printf("init: created task4 with TID %d\n", g_tid);
+	os_mut_release(g_mut_uart);
+	
+	g_tid = os_tsk_create(task5, 2);  /* task 5 at priority 3 */
+	os_mut_wait(g_mut_uart, 0xFFFF);
+	printf("init: created task5 with TID %d\n", g_tid);
 	os_mut_release(g_mut_uart);
 
 	os_tsk_delete_self();     /* task MUST delete itself before exiting */
@@ -209,6 +218,9 @@ char *state2str(unsigned char state, char *str)
 	case WAIT_MUT:
 		strcpy(str, "WAIT_MUT");
 		break;
+	case WAIT_MEM:
+		strcpy(str, "WAIT_MEM");
+		break;
 	default:
 		strcpy(str, "UNKNOWN");    
 	}
@@ -250,5 +262,4 @@ int main(void)
 	printf("Calling os_sys_init()...\n");
 	
 	os_sys_init(init);    /* initilize the OS and start the first task */
-
 }

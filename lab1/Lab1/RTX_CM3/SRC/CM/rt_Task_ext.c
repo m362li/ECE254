@@ -8,7 +8,7 @@
  *      This code extends the RealView Run-Time Library.
  *      Created by University of Waterloo ECE254 Lab Staff.
  *---------------------------------------------------------------------------*/
- 
+
 #include "rt_TypeDef.h"
 #include "RTX_Config.h"
 #include "rt_System.h"

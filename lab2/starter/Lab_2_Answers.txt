@@ -1,0 +1,24 @@
+1.
+   a) _declare_box(mypool, 12, 20);
+   b) _init_box(mypool, sizeof(mypool), 12);
+   c) rt_alloc_box()
+   d) rt_free_box()
+
+2. used to return a value (typically an integer) for when a task is finished executing
+
+3. 
+   a) puts a process control block (PCB) into a list of PCB's ordered by their priorities
+   b) gets the PCB of the highest priority from a list i.e. the first PCB in a PCB list ordered by priority
+
+4. 
+   a) blocks the current running PCB and executes and runs the PCB with the highest priority in the queue
+   b) runs the highest priority task in the queue if no PCB specified, puts a specified task into the queue if said task
+      has lower priority over the current running task, or runs the specified task and puts the current running task
+      on the top of the queue if said task has a higher priority than the current running task
+
+5. OS_R_MBX is set only when a receiver is blocked and resumed. Context switching is happening in HAL_CM3.c 
+assembly code rather than in kernal C code. Only the sender gets to set the value of OS_R_MBX when receiver is
+blocked and resumed. Since context switching is happening in assembly, we are already out of the kernal and cannot
+set the value of OS_R_MBX.
+
+6. os_dly and os_rdy uses a linked list data-structure (struct OS_XCB implements said structure)
