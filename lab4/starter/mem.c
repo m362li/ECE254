@@ -17,22 +17,27 @@
 /*
 
 mem_list
+- ordered linked list data structure by starting address
+- last node is always unallocated memory whose starting address is the closest, or is, the range of memory
 
 */
 struct mem_list{
-	int* address_location;
-	size_t allocated_memory;
-	size_t block_size;
+	size_t* address_location;
+	size_t memory_occupied;
 	int is_allocated;
 	
+	struct mem_list *previous;
 	struct mem_list *next;
 };
 
-mem_list *best_fit_root;
-mem_list *worst_fit_root;
+mem_list best_fit_root;
+mem_list worst_fit_root;
 
 unsigned byte *best_fit_mem;
 unsigned byte *worst_fit_mem;
+
+size_t best_fit_mem_bytes;
+size_t worst_fit_mem_bytes;
 
 /* Functions */
 
@@ -45,15 +50,9 @@ int best_fit_memory_init(size_t size)
 	if (size == 0 || size % 4 != 0)
 		return -1;
 	else {
-		mem = malloc( size * sizeof(byte) );
-		
-		best_fit_root = malloc(sizeof (struct mem_list));
-		
-		best_fit_root->address_location = (int*) best_fit_mem;
-		best_fit_root->allocated_memory = sizeof (struct mem_list);
-		best_fit_root->block_size = size / 4;
-		best_fit_root->is_allocated = 0;
-		best_fit_root->next = NULL;
+		mem = malloc( size * sizeof(unsigned byte) );
+		best_fit_mem_bytes = size;
+		best_fit_root = { (size_t*) best_fit_mem, size, 0, NULL, NULL};
 	}
 	
 	return 0;
@@ -71,7 +70,41 @@ int worst_fit_memory_init(size_t size)
 /* memory allocators */
 void *best_fit_alloc(size_t size)
 {
-	if (size <= 0 || size > )
+	mem_list current_node = best_fit_root;
+
+	while (current_node != NULL) {
+		size_t *starting_address;
+		size_t blocks_to_occupy = (size / 4) + 1;
+		mem_list *next_temp;
+		mem_list *previous_temp;
+		mem_list new_node;
+ 
+		if (!current_node->is_allocated) {
+			if (current_node->previous == NULL && current_node->next == NULL) {
+				starting_address = current_node->starting_address;
+
+				new_node = { starting_address, size, 1, NULL, &current_node };
+				
+				current_node->stating_address = starting_address + blocks_to_occupy;
+				current_node->memory_occupied = best_fit_mem_bytes - (blocks_to_occupy * 4);
+				current_node->previous = new_node;
+
+				return starting_address;
+			}
+			if (current_node->previous != NULL && current_node->next != NULL) {
+				size_t mem_available = (next_temp->starting_address - current_node->starting_address) * 4;
+
+				if (size <= mem_available) {
+					current_node->memory_occupied = size;
+					current_node->blocks_occupied = blocks_to_occupy;
+					current_node->is_allocated = 1;
+				}
+			}
+		}
+
+		current_node = *(current_node->next);
+	}
+
 	// To be completed by students
 	return NULL;
 }
